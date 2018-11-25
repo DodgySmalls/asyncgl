@@ -1,0 +1,11 @@
+R"(
+#version 430 core
+in vec3 position;
+in vec2 textureCoords;
+
+out vec2 tCoord;
+void main() {
+	tCoord = textureCoords;
+	gl_Position = vec4(position, 1.0);
+}
+)"

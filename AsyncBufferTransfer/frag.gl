@@ -1,0 +1,15 @@
+R"(
+#version 430 core
+in vec2 tCoord;
+out vec4 fragColour;
+
+layout(binding=0) uniform sampler2D texMain;
+uniform float clock;
+
+void main() {
+
+	fragColour = texture(texMain, tCoord);
+	fragColour.a = 0.5 + (0.5 * clock);
+	//fragColour = vec4(tCoord.x * 0.5 * clock, 0.0, tCoord.y * 0.5 * clock, 1.0);
+}
+)"
