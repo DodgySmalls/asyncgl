@@ -1,5 +1,12 @@
 #include "glUtil.h"
 
+static void errorCallback(int error,
+	const char* description)
+{
+	fputs(description, stderr);
+	_fgetchar();
+}
+
 void APIENTRY GlUtil::openGlDebugMessageCallback(GLenum source,
 	GLenum type,
 	GLuint id,
@@ -51,7 +58,8 @@ void APIENTRY GlUtil::openGlDebugMessageCallback(GLenum source,
 	fprintf(stderr, "---------------------opengl-callback-end--------------\n");
 }
 
-GLuint GlUtil::compileShader(char * shaderString, GLenum shaderType)
+GLuint GlUtil::compileShader(char * shaderString, 
+	GLenum shaderType)
 {
 	if (shaderType != GL_VERTEX_SHADER && 
 		shaderType != GL_GEOMETRY_SHADER &&
@@ -90,7 +98,9 @@ GLuint GlUtil::compileShader(char * shaderString, GLenum shaderType)
 	return shaderId;
 }
 
-GLuint GlUtil::compileProgram(GLuint vertexShaderId, GLuint geometryShaderId, GLuint fragmentShaderId)
+GLuint GlUtil::compileProgram(GLuint vertexShaderId, 
+	GLuint geometryShaderId, 
+	GLuint fragmentShaderId)
 {
 	// Link the program
 	GLuint programId = glCreateProgram();
@@ -125,4 +135,90 @@ GLuint GlUtil::compileProgram(GLuint vertexShaderId, GLuint geometryShaderId, GL
 	glDeleteShader(fragmentShaderId);
 
 	return programId;
+}
+
+bool GlUtil::initializeGlfw()
+{
+	glfwSetErrorCallback(errorCallback);
+	if (!glfwInit()) {
+		fprintf(stderr, "ERROR: could not start GLFW3\n");
+		return false;
+	}
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_MAJOR);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+	glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	return true;
+}
+
+GLFWwindow * GlUtil::initializeMainWindow()
+{
+	GLFWwindow* window = glfwCreateWindow(800, 800, "Asynchronous Buffer Demo", NULL, NULL);
+	if (!window) {
+		fprintf(stderr, "ERROR: could not open window with GLFW3\n");
+		glfwTerminate();
+		return NULL;
+	}
+	glfwMakeContextCurrent(window);
+	return window;
+}
+
+/**
+	GLFW does not afford us context management,
+	the closest we can come is to create a new window as a child of the original, and not display it.
+	This incurs some unfortunate overhead, but cannot be circumvented without using a different library.
+	
+	This function is not guaranteed to work under GLEW, as we don't necessarily know the location of our context.
+	It will work in systems that uniformly return contexts associated with a single source.
+
+	@pre This function may not be called unless the system has properly initialized GLFW
+*/
+GLFWwindow * GlUtil::initializeBackgroundWindow(GLFWwindow *parent)
+{
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_VERSION_MAJOR);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_VERSION_MINOR);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+	glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+
+	return glfwCreateWindow(400, 400, "Background", NULL, parent);
+}
+
+bool GlUtil::enableContextDebugging()
+{
+	//examine context
+	GLint flags;
+	glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+	{
+		fprintf(stdout, "Context is flagged as debug.\n");
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		if (glDebugMessageCallback)
+		{
+			glDebugMessageCallback(GlUtil::openGlDebugMessageCallback, nullptr);
+
+			GLuint unusedIds = 0;
+			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, &unusedIds, true);
+		}
+		else
+		{
+			fprintf(stderr, "ERROR : glDebugMessageCallback is NULL, exiting.\n");
+			int waitToProceed = 0;
+			std::cin >> waitToProceed;
+			exit(EXIT_FAILURE);
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
