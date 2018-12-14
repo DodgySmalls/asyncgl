@@ -1,11 +1,15 @@
 # Asynchronous Buffer Transfer
 
-This respository contains code to demonstrate a threading scheme to handle asynchronous OpenGL calls, particularily in order to handle streaming data without disrupting rendering.
+This respository contains code to demonstrate a threading scheme to handle asynchronous OpenGL calls, particularily to sideload textures (easily extensible to any buffer). This sample demonstrates a scheme using only shared context resources, but can trivially be extended to use DMA (through a PBO) for performance, see the extended comment in Entity.cpp.
 
-The current status of the code is that it is a simple example of loading a texture concurrently. In fact, it actually cheats and only renders a pre-loaded synchronous texture currently after joining a single pthread due to oversights in my understanding of which OpenGL calls are threadsafe.
+https://youtu.be/zfm9iLJi6PQ
 
-https://youtu.be/WxG6CSiDBGY
+### Dependencies
 
-The project's goal is to demonstrate arbitrary buffer transfer by using the most applicable example of textures, however textures are merely one kind of data stream among many. The final version will include a more useful data where larger amounts of data are streamed which would otherwise cause the system to pause.
+* GLEW
+* GLFW
+* STB Image
+
+### References
 
 [1] Patrick Cozzie, Christophe Riccio OpenGL Insights https://www.seas.upenn.edu/~pcozzi/OpenGLInsights/OpenGLInsights-AsynchronousBufferTransfers.pdf
