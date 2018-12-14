@@ -9,6 +9,7 @@ https://youtu.be/zfm9iLJi6PQ
 * GLEW
 * GLFW
 * STB Image
+* pthread win32
 
 ### References
 
