@@ -51,23 +51,64 @@ void *UploadWorker::uploadTask(void * selfArgs)
 {
 	UploadWorker *self = ((UploadTaskArgs *)selfArgs)->self;
 	glfwMakeContextCurrent(self->mContext);
-	glClearColor(112, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glfwSwapBuffers(self->mContext);
+	
+	//Visual test to ensure context functioning properly
+	//glClearColor(112, 0, 0, 0);
+	//glClear(GL_COLOR_BUFFER_BIT);
+	//glfwSwapBuffers(self->mContext);
 
 	for (;;)
 	{
-		printf("UW   waiting for request...\n");
 		Entity entity = self->mInputQueue->Dequeue();
-		printf("UW   loading an entity!");
-		entity.uploadToGpu();
-		printf("UW   waiting for GPU sync");
-		GLsync uploadComplete = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-		glClientWaitSync(uploadComplete, 0, 100);
-		printf("UW   submitting ready request...");
+
+		auto timer_start = std::chrono::steady_clock::now();
+
+			entity.uploadToGpu();
+
+		auto timer_end = std::chrono::steady_clock::now();
+		unsigned int duration = std::chrono::duration_cast<std::chrono::nanoseconds>(timer_end - timer_start).count();
+		self->mProfileNanoDurations.push_back(duration);
+
+		timer_start = std::chrono::steady_clock::now();
+
+			GLsync uploadComplete = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+			glClientWaitSync(uploadComplete, 0, 100);
+
+		timer_end = std::chrono::steady_clock::now();
+		duration = std::chrono::duration_cast<std::chrono::nanoseconds>(timer_end - timer_start).count();
+		self->mProfileNanoSyncDurations.push_back(duration);
+
+
 		self->mOutputQueue->Enqueue(entity);
-		printf("UW   task completed!");
 	}
 
 	return NULL;
+}
+
+/**
+	not threadsafe
+*/
+unsigned int UploadWorker::getMeanUploadTime()
+{
+	double running = 0.0;
+	for (auto t : mProfileNanoDurations)
+	{
+		running += ((double)t) / ((double)mProfileNanoDurations.size());
+	}
+
+	return (unsigned int)running;
+}
+
+/**
+	not threadsafe
+*/
+unsigned int UploadWorker::getMeanSyncTime()
+{
+	double running = 0.0;
+	for (auto t : mProfileNanoSyncDurations)
+	{
+		running += ((double)t) / ((double)mProfileNanoDurations.size());
+	}
+
+	return (unsigned int)running;
 }

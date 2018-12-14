@@ -186,7 +186,7 @@ GLFWwindow * GlUtil::initializeBackgroundWindow(GLFWwindow *parent)
 	glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
 	return glfwCreateWindow(400, 400, "Background", NULL, parent);
 }
@@ -221,4 +221,24 @@ bool GlUtil::enableContextDebugging()
 	{
 		return false;
 	}
+}
+
+glm::mat4x4 GlUtil::getScaleMat(float x, float y, float z)
+{
+	glm::mat4x4 m = glm::mat4(1.0f);
+
+	m[0][0] = x;
+	m[1][1] = y;
+	m[2][2] = z;
+
+	return m;
+}
+
+glm::mat4x4 GlUtil::getTranslationMat(float x, float y, float z)
+{
+	glm::mat4x4 m = glm::mat4(1.0f);
+
+	m[3] = glm::vec4(x, y, z, 1.0f);
+
+	return m;
 }

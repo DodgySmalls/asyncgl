@@ -36,6 +36,9 @@
     <ClCompile Include="LoadFromFileWorker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RequestSpawnWorker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TextureWrapper.h">
@@ -62,20 +65,23 @@
     <ClInclude Include="LoadFromFileWorker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RequestSpawnWorker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="frag.gl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="vert.gl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="frag.gl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="1.png">
+    <Image Include="foreground.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="2.jpg">
+    <Image Include="background.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

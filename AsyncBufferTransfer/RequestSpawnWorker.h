@@ -9,33 +9,31 @@
 
 //Include standard libraries
 #include <chrono>
+#include <thread>
+#include <random>
 
 //Include internals
 #include "Entity.h"
 #include "FifoQueue.h"
 #include "GlUtil.h"
 
-class LoadFromFileWorker
+class RequestSpawnWorker
 {
 public:
-	LoadFromFileWorker(FifoQueue<Entity> *input, FifoQueue<Entity> *output);
-	~LoadFromFileWorker();
+	RequestSpawnWorker(FifoQueue<Entity> *output, unsigned int numGenerations);
+	~RequestSpawnWorker();
 	void run();
-	unsigned int getMeanTaskTime();
-
 private:
 	GLFWwindow *mParent;
 	bool isRunning;
-	FifoQueue<Entity> *mInputQueue;
 	FifoQueue<Entity> *mOutputQueue;
-	
-	std::vector<unsigned int> mProfileNanoDurations;
+	unsigned int mNumGenerations;
 
-	static void *loadFileTask(void *selfArgs);
+	static void *spawnRequestTask(void *selfArgs);
 };
 
-struct LoadFileTaskArgs {
-	LoadFromFileWorker *self;
+struct SpawnRequestTaskArgs {
+	RequestSpawnWorker *self;
 
-	LoadFileTaskArgs(LoadFromFileWorker *s) : self(s) {}
+	SpawnRequestTaskArgs(RequestSpawnWorker *s) : self(s) {}
 };

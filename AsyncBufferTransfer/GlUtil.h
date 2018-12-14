@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #define GL_VERSION_MAJOR 4
 #define GL_VERSION_MINOR 3
+#include "glm/glm.hpp"
 
 //Include standard libraries
 #include <vector>
@@ -35,4 +36,8 @@ namespace GlUtil
 	GLFWwindow * initializeBackgroundWindow(GLFWwindow *parent);
 	
 	bool enableContextDebugging();
+
+	glm::mat4x4 getScaleMat(float x, float y, float z);
+	
+	glm::mat4x4 getTranslationMat(float x, float y, float z);
 }

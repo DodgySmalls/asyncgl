@@ -26,7 +26,6 @@ void LoadFromFileWorker::run()
 	pthread_t thread;
 	int tid = 0;
 
-	printf("this: %p", this);
 	LoadFileTaskArgs *args = (LoadFileTaskArgs *)malloc(sizeof(LoadFileTaskArgs));
 	*args = LoadFileTaskArgs(this);
 
@@ -41,14 +40,40 @@ void *LoadFromFileWorker::loadFileTask(void * selfArgs)
 
 	for (;;)
 	{
-		printf("LFFW waiting for request...\n");
 		Entity entity = self->mInputQueue->Dequeue();
-		printf("LFFW loading an entity!");
-		entity.loadFromDisk();
-		printf("LFFW submitting upload request...");
-		self->mOutputQueue->Enqueue(entity);
-		printf("LFFW task completed!");
+
+		auto timer_start = std::chrono::steady_clock::now();
+
+			entity.loadFromDisk();
+
+			if (entity.wasLoaded())
+			{
+				self->mOutputQueue->Enqueue(entity);
+			}
+			else
+			{
+				fprintf(stderr, "ERROR : LoadFromFileWorker failed to load image from disk.\n");
+			}
+
+		auto timer_end = std::chrono::steady_clock::now();
+
+		unsigned int duration = std::chrono::duration_cast<std::chrono::nanoseconds>(timer_end - timer_start).count();
+		self->mProfileNanoDurations.push_back(duration);
 	}
 
 	return NULL;
+}
+
+/**
+	not threadsafe
+*/
+unsigned int LoadFromFileWorker::getMeanTaskTime()
+{
+	double running = 0.0;
+	for (auto t : mProfileNanoDurations)
+	{
+		running += ((double)t) / ((double)mProfileNanoDurations.size());
+	}
+
+	return (unsigned int)running;
 }

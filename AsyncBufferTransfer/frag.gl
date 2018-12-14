@@ -9,7 +9,7 @@ uniform float clock;
 void main() {
 
 	fragColour = texture(texMain, tCoord);
-	fragColour.a = (0.5 * clock);
+	fragColour.a = fragColour.a * (0.9 * clock);
 	//fragColour = vec4(tCoord.x * 0.5 * clock, 0.0, tCoord.y * 0.5 * clock, 1.0);
 }
 )"

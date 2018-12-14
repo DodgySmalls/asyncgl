@@ -154,6 +154,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GlUtil.cpp" />
     <ClCompile Include="LoadFromFileWorker.cpp" />
+    <ClCompile Include="RequestSpawnWorker.cpp" />
     <ClCompile Include="TextureWrapper.cpp" />
     <ClCompile Include="UploadWorker.cpp" />
     <ClCompile Include="Vertex.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="FifoQueue.h" />
     <ClInclude Include="GlUtil.h" />
     <ClInclude Include="LoadFromFileWorker.h" />
+    <ClInclude Include="RequestSpawnWorker.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextureWrapper.h" />
     <ClInclude Include="UploadWorker.h" />
@@ -173,8 +175,8 @@
     <None Include="vert.gl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="1.png" />
-    <Image Include="2.jpg" />
+    <Image Include="background.jpg" />
+    <Image Include="foreground.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
